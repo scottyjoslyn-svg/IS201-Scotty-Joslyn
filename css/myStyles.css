@@ -1,0 +1,81 @@
+.scratch-page {
+    background-color: #ba0021;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    margin: 0;
+}
+
+.scratch-page .header {
+    background-color: #003263;
+    text-align: center;
+    padding: 30px;
+}
+
+.scratch-page .header h1 {
+    font-family: Georgia, serif;
+    font-size: 40px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.scratch-page .intro {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+.scratch-page .nav-box {
+    background-color: white;
+    text-align: center;
+    padding: 15px;
+}
+
+.scratch-page .nav-box a {
+    color: #003263;
+    margin: 0 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.scratch-page .nav-box a:hover {
+    text-decoration: underline;
+}
+
+.scratch-page .content-box {
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 2px solid white;
+    margin: 20px auto;
+    padding: 20px;
+    width: 80%;
+    border-radius: 10px;
+}
+
+.scratch-page h2 {
+    font-family: Georgia, serif;
+    border-bottom: 2px solid white;
+    padding-bottom: 5px;
+}
+
+.scratch-page .main-image {
+    width: 600px;
+    max-width: 100%;
+    display: block;
+    margin: 10px auto;
+    border: 3px solid white;
+    border-radius: 8px;
+}
+
+.scratch-page iframe {
+    display: block;
+    margin: 20px auto;
+    max-width: 100%;
+    border: 3px solid white;
+}
+
+.scratch-page a {
+    color: white;
+}
+
+.scratch-page ol,
+.scratch-page ul {
+    margin-left: 25px;
+}

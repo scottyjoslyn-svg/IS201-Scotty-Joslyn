@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Run Derby</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(to bottom, #6ec6ff 0%, #b9e7ff 35%, #4caf50 35%, #2e7d32 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .game {
+      width: 100%;
+      max-width: 950px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 4px solid #ffffff;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(4px);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      text-align: center;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      color: #fef3c7;
+    }
+
+    .scoreboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .card-label {
+      font-size: 0.9rem;
+      color: #dbeafe;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card-value {
+      font-size: 2rem;
+      font-weight: bold;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .field {
+      position: relative;
+      background: linear-gradient(to bottom, #43a047, #2e7d32);
+      border: 3px solid #d1fae5;
+      border-radius: 22px;
+      min-height: 260px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      padding: 24px 18px;
+    }
+
+    .sky-text {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 1px 1px 4px #000;
+      margin-bottom: 12px;
+    }
+
+    .diamond {
+      position: absolute;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 120px;
+      height: 120px;
+      background: #c68642;
+      border: 4px solid #fef3c7;
+    }
+
+    .base {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border: 2px solid #ddd;
+    }
+
+    .base.home { bottom: -10px; left: 50px; }
+    .base.first { top: 50px; right: -10px; }
+    .base.second { top: -10px; left: 50px; }
+    .base.third { top: 50px; left: -10px; }
+
+    .pitch-display,
+    .result-display {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .pitch-display {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: #e0f2fe;
+    }
+
+    .result-display {
+      font-size: 2.2rem;
+      font-weight: bold;
+      min-height: 52px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .home-run {
+      color: #ffd54f;
+      animation: pop 0.35s ease;
+    }
+
+    .out {
+      color: #ff8a80;
+      animation: shake 0.35s ease;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    .controls-title {
+      text-align: center;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: #fef9c3;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    button:hover {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .contact-btn {
+      background: linear-gradient(to bottom, #29b6f6, #0288d1);
+    }
+
+    .normal-btn {
+      background: linear-gradient(to bottom, #66bb6a, #2e7d32);
+    }
+
+    .power-btn {
+      background: linear-gradient(to bottom, #ef5350, #c62828);
+    }
+
+    .reset-btn {
+      background: linear-gradient(to bottom, #ab47bc, #6a1b9a);
+      display: block;
+      margin: 18px auto 0;
+    }
+
+    .info-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      color: #fde68a;
+    }
+
+    .rules {
+      line-height: 1.6;
+      color: #f8fafc;
+    }
+
+    .log {
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .log-entry {
+      background: rgba(0, 0, 0, 0.22);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #ffffff;
+    }
+
+    .final-message {
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #fff59d;
+      margin-top: 12px;
+      min-height: 34px;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+
+    @media (max-width: 700px) {
+      .scoreboard,
+      .info-panels {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .result-display {
+        font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .scoreboard,
+      .info-panels {
+        grid-template-columns: 1fr;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <h1>⚾ Home Run Derby</h1>
+    <div class="subtitle">Pick your swing. Guess the right pitch. Launch bombs before 7 outs.</div>
+
+    <div class="scoreboard">
+      <div class="card">
+        <div class="card-label">Home Runs</div>
+        <div class="card-value" id="score">0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Outs</div>
+        <div class="card-value" id="outs">0 / 7</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Streak</div>
+        <div class="card-value" id="streak">0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Best Score</div>
+        <div class="card-value" id="bestScore">0</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="sky-text">Step up to the plate</div>
+
+      <div class="pitch-display" id="pitchDisplay">Choose Contact, Normal, or Power.</div>
+      <div class="result-display" id="resultDisplay"></div>
+
+      <div class="diamond">
+        <div class="base home"></div>
+        <div class="base first"></div>
+        <div class="base second"></div>
+        <div class="base third"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="controls-title">Choose your swing</div>
+      <div class="button-row">
+        <button class="contact-btn swing-btn" onclick="playRound('contact')">🎯 Contact</button>
+        <button class="normal-btn swing-btn" onclick="playRound('normal')">⚾ Normal</button>
+        <button class="power-btn swing-btn" onclick="playRound('power')">💥 Power</button>
+      </div>
+      <div class="final-message" id="finalMessage"></div>
+      <button class="reset-btn" onclick="resetGame()">Play Again</button>
+    </div>
+
+    <div class="info-panels">
+      <div class="panel">
+        <h2>How to Homer</h2>
+        <div class="rules">
+          <strong>Contact</strong> beats <strong>Fastball</strong><br>
+          <strong>Normal</strong> beats <strong>Slider</strong><br>
+          <strong>Power</strong> beats <strong>Curveball</strong><br><br>
+          Every correct match = <strong>1 home run</strong><br>
+          Every other result = <strong>1 out</strong><br>
+          Game ends at <strong>7 outs</strong>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Game Log</h2>
+        <div class="log" id="log">
+          <div class="log-entry">Your derby is ready. Start swinging.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let score = 0;
+    let outs = 0;
+    let streak = 0;
+    let bestScore = 0;
+    const maxOuts = 7;
+
+    const pitches = ["fastball", "slider", "curveball"];
+
+    function getCpuPitch() {
+      return pitches[Math.floor(Math.random() * pitches.length)];
+    }
+
+    function capitalize(word) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
+    function addLog(message) {
+      const log = document.getElementById("log");
+      const entry = document.createElement("div");
+      entry.className = "log-entry";
+      entry.textContent = message;
+      log.prepend(entry);
+    }
+
+    function updateDisplay() {
+      document.getElementById("score").textContent = score;
+      document.getElementById("outs").textContent = `${outs} / ${maxOuts}`;
+      document.getElementById("streak").textContent = streak;
+      document.getElementById("bestScore").textContent = bestScore;
+    }
+
+    function endGame() {
+      document.getElementById("finalMessage").textContent =
+        `Game Over! Final Score: ${score} home run${score === 1 ? "" : "s"}!`;
+      document.querySelectorAll(".swing-btn").forEach(btn => btn.disabled = true);
+    }
+
+    function playRound(hitType) {
+      if (outs >= maxOuts) return;
+
+      const cpuPitch = getCpuPitch();
+      const pitchDisplay = document.getElementById("pitchDisplay");
+      const resultDisplay = document.getElementById("resultDisplay");
+
+      pitchDisplay.innerHTML = `You chose <strong>${capitalize(hitType)}</strong>. CPU threw <strong>${capitalize(cpuPitch)}</strong>.`;
+
+      const isHomeRun =
+        (hitType === "contact" && cpuPitch === "fastball") ||
+        (hitType === "normal" && cpuPitch === "slider") ||
+        (hitType === "power" && cpuPitch === "curveball");
+
+      if (isHomeRun) {
+        score++;
+        streak++;
+        if (score > bestScore) bestScore = score;
+
+        resultDisplay.textContent = "HOME RUN! 🚀";
+        resultDisplay.className = "result-display home-run";
+        addLog(`${capitalize(hitType)} vs ${capitalize(cpuPitch)} — HOME RUN`);
+      } else {
+        outs++;
+        streak = 0;
+
+        resultDisplay.textContent = "OUT! ❌";
+        resultDisplay.className = "result-display out";
+        addLog(`${capitalize(hitType)} vs ${capitalize(cpuPitch)} — OUT`);
+      }
+
+      updateDisplay();
+
+      if (outs >= maxOuts) {
+        endGame();
+      }
+    }
+
+    function resetGame() {
+      if (score > bestScore) bestScore = score;
+
+      score = 0;
+      outs = 0;
+      streak = 0;
+
+      document.getElementById("pitchDisplay").textContent = "Choose Contact, Normal, or Power.";
+      document.getElementById("resultDisplay").textContent = "";
+      document.getElementById("resultDisplay").className = "result-display";
+      document.getElementById("finalMessage").textContent = "";
+      document.getElementById("log").innerHTML = '<div class="log-entry">New derby started. Start swinging.</div>';
+
+      document.querySelectorAll(".swing-btn").forEach(btn => btn.disabled = false);
+
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>
